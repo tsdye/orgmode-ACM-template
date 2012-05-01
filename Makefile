@@ -1,53 +1,32 @@
-## please modify following line for naming the end products (PDFs, ZIPs, ...)
-PROJECTNAME = sigproc-sp
+CC=gcc
+EMACS=/Applications/Emacs-23-4.app/Contents/MacOS/Emacs
+BATCH_EMACS=$(EMACS) --batch -Q -l init-old.el sigproc-sp-org-new.org
 
-## -----------------------------------------
-##       DO NOT EDIT BELOW THIS LINE
-## -----------------------------------------
+all: sigproc-sp-org-new.pdf
 
-## Makefile von Karl Voit (Karl@Voit.net)
+sigproc-sp-org-new.tex: sigproc-sp-org-new.org
+	$(BATCH_EMACS) -f org-export-as-latex
 
-## some Makefile-hints taken from: 
-## http://www.ctan.org/tex-archive/help/uk-tex-faq/Makefile
+sigproc-sp-org-new.pdf: sigproc-sp-org-new.tex
+	rm -f sigproc-sp-org-new.aux 
+	if pdflatex sigproc-sp-org-new.tex </dev/null; then \
+		true; \
+	else \
+		stat=$$?; touch sigproc-sp-org-new.pdf; exit $$stat; \
+	fi
+	bibtex sigproc-sp-org-new
+	while grep "Rerun to get" sigproc-sp-org-new.log; do \
+		if pdflatex sigproc-sp-org-new.tex </dev/null; then \
+			true; \
+		else \
+			stat=$$?; touch sigproc-sp-org-new.pdf; exit $$stat; \
+		fi; \
+	done
 
+sigproc-sp-org-new.ps: sigproc-sp-org-new.pdf
+	pdf2ps sigproc-sp-org-new.pdf
 
-MAINDOCUMENT = "sigproc-sp"
-## COMMANDS:
-PDFLATEX_CMD = pdflatex
-BIBTEX_CMD = bibtex
-MAKEIDX_CMD = makeindex
-DATESTAMP = `/bin/date +%Y-%m-%d`
-DATESTAMP_AND_PROJECT = ${DATESTAMP}_${PROJECTNAME}
-DATESTAMP_AND_PROJECT = ${PROJECTNAME}
-#PDFVIEWER = xpdf
-PDFVIEWER = acroread
+clean:
+	rm -f *.aux *.log tempo.ps *.dvi *.blg *.bbl *.toc *.tex *~ *.out sigproc-sp-org-new.pdf *.xml *.lot *.lof
 
-#help
-#helpThe main targets of this Makefile are:
-#help	help	this help
-.PHONY: help
-help:
-	@sed -n 's/^#help//p' < Makefile
-
-#help	pdf	makes a file per pdflatex
-.PHONY: pdf
-pdf:
-	${PDFLATEX_CMD} ${MAINDOCUMENT}.tex
-	-${BIBTEX_CMD} ${MAINDOCUMENT}
-	${PDFLATEX_CMD} ${MAINDOCUMENT}.tex
-	${PDFLATEX_CMD} ${MAINDOCUMENT}.tex
-
-
-#help	clean	clean up temporary files
-.PHONY: clean
-clean: 
-	-rm -r *.bcf *.run.xml _*_.* *~ *.aux *.bbl ${MAINDOCUMENT}.dvi *.ps *.blg *.idx *.ilg *.ind *.toc *.log *.log *.brf *.out *.lof *.lot *.gxg *.glx *.gxs *.glo *.gls -f
-
-#help	purge	cleaner than clean ;-)
-.PHONY: purge
-purge: clean
-	-rm *.pdf *.ps -f
-
-
-#end
 
