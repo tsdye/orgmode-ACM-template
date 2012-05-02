@@ -1,7 +1,7 @@
 #+TITLE:
 #+KEYWORDS: Open Science, Reproducible Research
 #+LANGUAGE:  en
-#+OPTIONS: author:nil email:nil creator:nil timestamp:nil skip:nil
+#+OPTIONS: H:5 author:nil email:nil creator:nil timestamp:nil skip:nil
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+STARTUP: overview
@@ -49,92 +49,99 @@
 \texttt{www.acm.org/eaddress.htm}}}
 #+END_LaTeX
 
+# Note that add-author-record isn't fully correct.  It formats a comma
+# separated list, when it should return a list with the final element
+# separated by "and".
+
 #+name: author-list
 #+header: :var authors=authorlist
 #+header: :var add-authors=additional-authors
 #+header: :results latex 
 #+header: :exports results
 #+BEGIN_SRC emacs-lisp
-  (defun author-record (r)
-    (if (> (length (first r)) 0)
-          (format "\\alignauthor\n%s\\titlenote{%s}\\\\
-        \\affaddr{%s}\\\\
-        \\affaddr{%s}\\\\
-        \\affaddr{%s}\\\\
-        \\email{%s}" (first r) (second r) (third r) (fourth r) (fifth r)
-        (sixth r))
-      "\\and")
+    (defun author-record (r)
+      (if (> (length (first r)) 0)
+            (format "\\alignauthor\n%s\\titlenote{%s}\\\\
+          \\affaddr{%s}\\\\
+          \\affaddr{%s}\\\\
+          \\affaddr{%s}\\\\
+          \\email{%s}" (first r) (second r) (third r) (fourth r) (fifth r)
+          (sixth r))
+        "\\and")
+    )
+    
+  (defun non-empty (list)
+    (let ( (i 0))
+    (mapcar #'(lambda (elem)
+                (if (> (length (first elem)) 0)
+                  (incf i)))
+            list)
+    i)
   )
     
-  (defun add-author-record (r)
-    (format "%s (%s, email:
-      {\\texttt{%s}})" 
-            (first r) (second r) (third r)))
-  
-  (let ( (i (+ (- (length authors) 2) (- (length add-authors) 2) ))
-         (a (mapcar (lambda (row)
-                      (author-record row)) 
-                    (setcdr authors (cdr (cdr authors)))))
-         (b (mapcar (lambda (row)
-                      (add-author-record row)) 
-                    (setcdr add-authors (cdr (cdr add-authors)))))
-         )
-    (concat
-     (format "\\numberofauthors{%s}\n\\author{\n" i)
-     (mapconcat 'identity a "\n")
-     "}"
-     (if (> (length add-authors) 0)
-         (concat "\n\\additionalauthors{Additional authors: "
-                 (mapconcat 'identity b ", ")
-                 ".}")
-       ())))
-        
+    (defun add-author-record (r)
+      (format "%s (%s, email:
+        {\\texttt{%s}})" 
+              (first r) (second r) (third r)))
+    
+    (let ( (i (+ (non-empty (setcdr authors (cdr (cdr authors)))) (- (length add-authors) 2) ))
+           (a (mapcar (lambda (row)
+                        (author-record row)) 
+                      (setcdr authors (cdr (cdr authors)))))
+           (b (mapcar (lambda (row)
+                        (add-author-record row)) 
+                      (setcdr add-authors (cdr (cdr add-authors)))))
+           )
+      (concat
+       (format "\\numberofauthors{%s}\n\\author{\n" i)
+       (mapconcat 'identity a "\n")
+       "}"
+       (if (> (length add-authors) 0)
+           (concat "\n\\additionalauthors{Additional authors: "
+                   (mapconcat 'identity b ", ")
+                   ".}")
+         ())))
+          
 #+END_SRC
 
 #+RESULTS: author-list
 #+BEGIN_LaTeX
-\numberofauthors{9}
+\numberofauthors{8}
 \author{
 \alignauthor
-Ben Trovato\titlenote{Dr.~Trovato insisted his name be first.}\\
-      \affaddr{Institute for Clarity in Documentation}\\
-      \affaddr{1932 Wallamaloo Lane}\\
-      \affaddr{Wallamaloo, New Zealand}\\
-      \email{trovato@corporation.com}
-\alignauthor
 G.K.M. Tobin\titlenote{The secretary disavows any knowledge of this author's actions.}\\
-      \affaddr{Institute for Clarity in Documentation}\\
-      \affaddr{P.O. Box 1212}\\
-      \affaddr{Dublin, Ohio 43017-6221}\\
-      \email{webmaster@marysville-ohio.com}
+        \affaddr{Institute for Clarity in Documentation}\\
+        \affaddr{P.O. Box 1212}\\
+        \affaddr{Dublin, Ohio 43017-6221}\\
+        \email{webmaster@marysville-ohio.com}
 \alignauthor
 Lars Th{\o}rv{\"a}ld\titlenote{This author is the one who did all the really hard work.}\\
-      \affaddr{The Th{\o}rv{\"a}ld Group}\\
-      \affaddr{1 Th{\o}rv{\"a}ld Circle}\\
-      \affaddr{Hekla, Iceland}\\
-      \email{larst@affiliation.org}
+        \affaddr{The Th{\o}rv{\"a}ld Group}\\
+        \affaddr{1 Th{\o}rv{\"a}ld Circle}\\
+        \affaddr{Hekla, Iceland}\\
+        \email{larst@affiliation.org}
 \and
 \alignauthor
 Lawrence P. Leipuner\titlenote{}\\
-      \affaddr{Brookhaven Laboratories}\\
-      \affaddr{Brookhaven National Lab}\\
-      \affaddr{P.O. Box 5000}\\
-      \email{lleipuner@reasearchlabs.org}
+        \affaddr{Brookhaven Laboratories}\\
+        \affaddr{Brookhaven National Lab}\\
+        \affaddr{P.O. Box 5000}\\
+        \email{lleipuner@reasearchlabs.org}
 \alignauthor
 Sean Fogarty\titlenote{}\\
-      \affaddr{NASA Ames Research Center}\\
-      \affaddr{Moffett Field}\\
-      \affaddr{California 94035}\\
-      \email{fogarty@amesres.org}
+        \affaddr{NASA Ames Research Center}\\
+        \affaddr{Moffett Field}\\
+        \affaddr{California 94035}\\
+        \email{fogarty@amesres.org}
 \alignauthor
 Charles Palmer\titlenote{}\\
-      \affaddr{Palmer Research Laboratories}\\
-      \affaddr{8600 Datapoint Drive}\\
-      \affaddr{San Antonio, Texas 78229}\\
-      \email{cpalmer@prl.com}}
+        \affaddr{Palmer Research Laboratories}\\
+        \affaddr{8600 Datapoint Drive}\\
+        \affaddr{San Antonio, Texas 78229}\\
+        \email{cpalmer@prl.com}}
 \additionalauthors{Additional authors: John Smith (The Th{\o}rv{\"a}ld Group, email:
-    {\texttt{jsmith@affiliation.org}}), Julius P. Kumquat (The Kumquat Consortium, email:
-    {\texttt{jpkumquat@consortium}}).}
+      {\texttt{jsmith@affiliation.org}}), Julius P. Kumquat (The Kumquat Consortium, email:
+      {\texttt{jpkumquat@consortium}}).}
 #+END_LaTeX
 
 \maketitle
@@ -222,7 +229,6 @@ you can indicate the start of a new paragraph with a blank line in
 your input file; that is why this sentence forms a separate paragraph.
 
 ** Type Changes and [[acm:subsecit][Special]] Characters
-# Removed \subsecit from the heading
 
 We have already seen several typeface changes in this sample.  You can
 indicate italicized words or phrases in your text with the command
@@ -277,6 +283,7 @@ and follow it with another numbered equation:
 \sum_{i=0}^{\infty}x_i=\int_{0}^{\pi+2} f
 \end{equation}
 just to demonstrate \LaTeX's able handling of numbering.
+
 ** Citations
 Citations to articles [[cite:bowman:reasoning, clark:pct, braams:babel, herlihy:methodology][(Long list)]], conference proceedings [[cite:clark:pct][(Clark)]] or
 books [[cite:salas:calculus, Lamport:LaTeX][(Book citations)]] listed in the Bibliography section of your
@@ -297,6 +304,7 @@ Guide/ [[cite:Lamport:LaTeX][(Lamport LaTeX)]].
 This article shows only the plainest form of the citation command,
 using =\cite=.  This is what is stipulated in the SIGS style
 specifications.  No other citation format is endorsed.
+
 ** Tables
 Because tables cannot be split across pages, the best placement for
 them is typically the top of the page nearest their initial cite.  To
@@ -410,14 +418,12 @@ Note that either *.ps* or *.eps* formats are used; use the =\epsfig=
 or =\psfig= commands as appropriate for the different file types.
 
 ** Theorem-like Constructs
-Other common constructs that may occur in your article are
-the forms for logical constructs like theorems, axioms,
-corollaries and proofs.  There are
-two forms, one produced by the
-command =\newtheorem= and the
-other by the command =\newdef=; perhaps
-the clearest and easiest way to distinguish them is
-to compare the two in the output of this sample document:
+Other common constructs that may occur in your article are the forms
+for logical constructs like theorems, axioms, corollaries and proofs.
+There are two forms, one produced by the command =\newtheorem= and the
+other by the command =\newdef=; perhaps the clearest and easiest way
+to distinguish them is to compare the two in the output of this sample
+document:
 
 This uses the *theorem* environment, created by
 the\linebreak =\newtheorem= command:
@@ -460,12 +466,9 @@ and don't forget to end the environment with
  
 #+END_COMMENT
 
-There is one other similar construct environment, which is
-already set up
-for you; i.e. you must /not/ use
-a =\newdef= command to
-create it: the *proof* environment.  Here
-is a example of its use:
+There is one other similar construct environment, which is already set
+up for you; i.e. you must /not/ use a =\newdef= command to create it:
+the *proof* environment.  Here is a example of its use:
 \begin{proof}
 Suppose on the contrary there exists a real number $L$ such that
 \begin{displaymath}
@@ -511,12 +514,11 @@ do with the present subject and are used as
 examples only.
 
 * Acknowledgments
-This section is optional; it is a location for you
-to acknowledge grants, funding, editing assistance and
-what have you.  In the present case, for example, the
-authors would like to thank Gerald Murray of ACM for
-his help in codifying this /Author's Guide/
-and the *.cls* and *.tex* files that it describes.
+This section is optional; it is a location for you to acknowledge
+grants, funding, editing assistance and what have you.  In the present
+case, for example, the authors would like to thank Gerald Murray of
+ACM for his help in codifying this /Author's Guide/ and the *.cls* and
+*.tex* files that it describes.
 
 
 \bibliographystyle{abbrv}
@@ -553,11 +555,10 @@ You just add the names and information in the
 =\additionalauthors= command at the start
 of the document.
 ** References
-Generated by bibtex from your ~.bib file.  Run latex,
-then bibtex, then latex twice (to resolve references)
-to create the ~.bbl file.  Insert that ~.bbl file into
-the .tex source file and comment out
-the command ={\char'134}thebibliography=.
+Generated by bibtex from your ~.bib file.  Run latex, then bibtex,
+then latex twice (to resolve references) to create the ~.bbl file.
+Insert that ~.bbl file into the .tex source file and comment out the
+command =\thebibliography=.
 * More Help for the Hardy
 The acm\_proc\_article-sp document class file itself is chock-full of
 succinct and helpful comments.  If you consider yourself a moderately
@@ -567,15 +568,38 @@ but please remember not to change it.
 \balancecolumns
 * Setup                                                            :noexport:
 
+** Instructions for use
+   - Tangle initialization file, C-c C-v t
+   - Configure the Makefile so it works with your system
+   - Run make
+
 ** Initialization file for old exporter
 
 This source code block tangles the initialization file that configures
 the old Org-mode LaTeX exporter.
 
+You might need to change this for your system:
+   - Check =load-path= settings
+   - Make sure the languages used in your source code blocks have been
+     loaded with =org-babel-load-languages=
+
+An org-entity, =\space=, has been added, which can be used after a
+period that doesn't end a sentence, e.g., "Dr.\space Martin Luther King"
+
+A link type, =cite=, is defined for citations.  See the text for how
+to insert a citation.  Note that AucTeX and ebib can be configured to
+insert the citation correctly.
+
+A link type, =acm=, is defined to insert ACM-specific commands used to
+italicize words in section headings.  See the text for examples of its
+use. 
+
 #+name: initialize-old-exporter
 #+header: :eval never
 #+header: :tangle init-old.el
-#+begin_src emacs-lisp :results silent :exports none
+#+header: :results silent
+#+header: :exports none
+#+begin_src emacs-lisp 
 (add-to-list 'load-path "~/.emacs.d/src/org/lisp") ;; <- adjust
 (add-to-list 'load-path "~/.emacs.d/src/org") ;; <- adjust
 
@@ -632,7 +656,15 @@ the old Org-mode LaTeX exporter.
                  ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 #+end_src
 
-** CC=gcc
+** Configure makefile
+
+Configure the Makefile by supplying the correct string for your emacs
+application and the name of the initialization file.  Currently, this
+is setup to use the old exporter.  It will need to be modified to run
+the new exporter.
+
+Once this is done, evaluate the code block with C-c C-c to create a
+Makefile.  
 
 #+name: configure-makefile
 #+header: :file makefile-temp
@@ -646,70 +678,24 @@ the old Org-mode LaTeX exporter.
   
   all: %s.pdf
   
-  %s.tex: %s.org
-          $(BATCH_EMACS) -f org-export-as-latex
+  %s.tex: %s.org\n\t$(BATCH_EMACS) -f org-export-as-latex
   
-  %s.pdf: %s.tex
-          rm -f %s.aux 
-          if pdflatex %s.tex </dev/null; then \\
-                  true; \\
-          else \\
-                  stat=$$?; touch %s.pdf; exit $$stat; \\
-          fi
-          bibtex %s
-          while grep \"Rerun to get\" %s.log; do \\
-                  if pdflatex %s.tex </dev/null; then \\
-                          true; \\
-                  else \\
-                          stat=$$?; touch %s.pdf; exit $$stat; \\
-                  fi; \\
-          done
+  %s.pdf: %s.tex\n\trm -f %s.aux\n\tif pdflatex %s.tex </dev/null; then \\\n\t\ttrue; \\\n\telse \\\n\t\tstat=$$?; touch %s.pdf; exit $$stat; \\\n\tfi\n\tbibtex %s\n\twhile grep \"Rerun to get\" %s.log; do \\\n\t\tif pdflatex %s.tex </dev/null; then \\\n\t\t\ttrue; \\\n\t\telse \\\n\t\t\tstat=$$?; touch %s.pdf; exit $$stat; \\\n\t\tfi; \\\n\tdone
   
-  %s.ps: %s.pdf
-          pdf2ps %s.pdf
+  %s.ps: %s.pdf\n\tpdf2ps %s.pdf
   
-  clean:
-          rm -f *.aux *.log  *.dvi *.blg *.bbl *.toc *.tex *~ *.out %s.pdf *.xml *.lot *.lof
+  clean:\n\trm -f *.aux *.log  *.dvi *.blg *.bbl *.toc *.tex *~ *.out %s.pdf *.xml *.lot *.lof
   " emacs init-file (file-name-nondirectory (buffer-file-name)) f f f f f f f f f f f f f f f f))
 #+END_SRC
 
 #+RESULTS: configure-makefile
 [[file:makefile-temp]]
 
-#+RESULTS:
-#+begin_example
-EMACS=/Applications/Emacs-23-4.app/Contents/MacOS/Emacs
-BATCH_EMACS=$(EMACS) --batch -Q -l init-old.el /Users/dk/Public/projects/922_ACM_Org/orgmode-ACM-template/sigproc-sp-org-new.org
-
-all: sigproc-sp-org-new.pdf
-
-sigproc-sp-org-new.tex: sigproc-sp-org-new.org
-        $(BATCH_EMACS) -f org-export-as-latex
-
-sigproc-sp-org-new.pdf: sigproc-sp-org-new.tex
-        rm -f sigproc-sp-org-new.aux 
-        if pdflatex sigproc-sp-org-new.tex </dev/null; then \
-                true; \
-        else \
-                stat=$$?; touch sigproc-sp-org-new.pdf; exit $$stat; \
-        fi
-        bibtex sigproc-sp-org-new
-        while grep "Rerun to get" sigproc-sp-org-new.log; do \
-                if pdflatex sigproc-sp-org-new.tex </dev/null; then \
-                        true; \
-                else \
-                        stat=$$?; touch sigproc-sp-org-new.pdf; exit $$stat; \
-                fi; \
-        done
-
-sigproc-sp-org-new.ps: sigproc-sp-org-new.pdf
-        pdf2ps sigproc-sp-org-new.pdf
-
-clean:
-        rm -f *.aux *.log  *.dvi *.blg *.bbl *.toc *.tex *~ *.out sigproc-sp-org-new.pdf *.xml *.lot *.lof
-#+end_example
-
 ** General purpose lists
+
+This source code block takes a one-column table and a command name and
+outputs a LaTeX code block with the table contents as a comma
+separated list wrapped by the command.
 
 #+name: list-to-cs-string
 #+header: :var in-list=term-list
@@ -768,16 +754,20 @@ change the layout.
 |-------------------+---------------------------+------------------------|
 | John Smith        | The Th{\o}rv{\"a}ld Group | jsmith@affiliation.org |
 | Julius P. Kumquat | The Kumquat Consortium    | jpkumquat@consortium   |
+
 ** Category list
 
-The following table holds information about ACM categories
+The following table holds information about ACM categories.
 
 #+name: categories
 | code  | description                      | category      | optional                                  |
 |-------+----------------------------------+---------------+-------------------------------------------|
 | H.4   | Information Systems Applications | Miscellaneous |                                           |
 | D.2.8 | Software Engineering             | Metrics       | complexity measures, performance measures |
+
 ** Term list
+
+This table is used as input to =list-to-cs-string= with the =theory= command.
 
 #+name: term-list
 | Term     |
@@ -785,6 +775,8 @@ The following table holds information about ACM categories
 | Theory   |
 
 ** Keyword list
+
+This table is used as input to =list-to-cs-string= with the =keyword= command.
 
 #+name: keyword-list
 | Keyword         |
