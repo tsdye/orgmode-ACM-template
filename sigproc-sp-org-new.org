@@ -168,7 +168,7 @@ with Emacs Org-mode. Therefore the content is reduced to a minimum.
             (first r) (second r) (third r) (fourth r)))
   (let ( (i (mapcar (lambda (row)
             (category-record row))
-          (setcdr c (cdr (cdr c))))))
+          (cdr (cdr c)))))
      (mapconcat 'identity i "\n")
 )
 #+END_SRC
@@ -738,15 +738,15 @@ separated list wrapped by the command.
     ) ;; end of "let"
     )
 (let (
-    (in-list (setcdr in-list (cdr (cdr in-list))))
+    (a (cdr (cdr in-list)))
 )
-(concat (format "\\%s{" in-command) (list-to-comma in-list) "}")
+(concat (format "\\%s{" in-command) (list-to-comma a) "}")
 )
 #+END_SRC
 
 #+RESULTS: list-to-cs-string
 #+BEGIN_LaTeX
-\terms{Theory, Practice}
+\terms{Theory}
 #+END_LaTeX
 
 ** Author list
