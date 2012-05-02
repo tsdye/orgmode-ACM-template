@@ -6,7 +6,6 @@
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+STARTUP: overview
 #+FILETAGS: RESEARCH
-#+LaTeX_HEADER: \usepackage{hyperref}
 
 # THIS IS SIGPROC-SP.TEX - VERSION 3.1
 # WORKS WITH V3.2SP OF ACM_PROC_ARTICLE-SP.CLS
@@ -38,7 +37,7 @@
 
 #+LaTeX_CLASS: acm-proc-article-sp
 
-* Shouldn't need this
+* Shouldn't need this                                              
 
 #+BEGIN_LaTeX
 \title{A Sample {\ttlit ACM} SIG Proceedings Paper in Org-mode Format\titlenote{(Does NOT produce the permission block, copyright information nor page numbering). For use with ACM\_PROC\_ARTICLE-SP.CLS. Supported by ACM.}}
@@ -84,13 +83,13 @@
         {\\texttt{%s}})" 
               (first r) (second r) (third r)))
     
-    (let ( (i (+ (non-empty (setcdr authors (cdr (cdr authors)))) (- (length add-authors) 2) ))
+    (let ( (i (+ (non-empty (cdr (cdr authors))) (- (length add-authors) 2) ))
            (a (mapcar (lambda (row)
                         (author-record row)) 
-                      (setcdr authors (cdr (cdr authors)))))
+                      (cdr (cdr authors))))
            (b (mapcar (lambda (row)
                         (add-author-record row)) 
-                      (setcdr add-authors (cdr (cdr add-authors)))))
+                      (cdr (cdr add-authors))))
            )
       (concat
        (format "\\numberofauthors{%s}\n\\author{\n" i)
@@ -108,6 +107,12 @@
 #+BEGIN_LaTeX
 \numberofauthors{8}
 \author{
+\alignauthor
+Ben Trovato\titlenote{Dr.~Trovato insisted his name be first.}\\
+        \affaddr{Institute for Clarity in Documentation}\\
+        \affaddr{1932 Wallamaloo Lane}\\
+        \affaddr{Wallamaloo, New Zealand}\\
+        \email{trovato@corporation.com}
 \alignauthor
 G.K.M. Tobin\titlenote{The secretary disavows any knowledge of this author's actions.}\\
         \affaddr{Institute for Clarity in Documentation}\\
@@ -394,6 +399,10 @@ This sample document contains examples of *.eps*
 and *.ps* files to be displayable with LaTeX.  More
 details on each of these is found in the /Author's Guide/.
 
+#+CAPTION: A sample black and white graphic (.eps format).
+
+[[file:fly.eps]]
+
 #+BEGIN_COMMENT
 \begin{figure}
 \centering
@@ -570,10 +579,11 @@ but please remember not to change it.
 
 ** Instructions for use
    - Tangle initialization file, C-c C-v t
-   - Configure the Makefile so it works with your system
+   - Generate the [[Configure%20makefile][Makefile]] 
    - Run make
 
 ** Initialization file for old exporter
+
 
 This source code block tangles the initialization file that configures
 the old Org-mode LaTeX exporter.
@@ -595,65 +605,66 @@ italicize words in section headings.  See the text for examples of its
 use. 
 
 #+name: initialize-old-exporter
-#+header: :eval never
 #+header: :tangle init-old.el
 #+header: :results silent
 #+header: :exports none
 #+begin_src emacs-lisp 
-(add-to-list 'load-path "~/.emacs.d/src/org/lisp") ;; <- adjust
-(add-to-list 'load-path "~/.emacs.d/src/org") ;; <- adjust
-
-(require 'org-install)
-(require 'org-latex)
-
-;; this line only required until the upcomming Org-mode/Emacs24 sync
-(load "~/.emacs.d/src/org/lisp/org-exp-blocks.el")
-
-
-;; Configure Babel to support all languages included in the manuscript
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (org        . t)))
-(setq org-confirm-babel-evaluate nil)
-
-;; Configure Org-mode
-  (setq org-export-latex-hyperref-format "\\ref{%s}")
-  (setq org-entities-user '(("space" "\\ " nil " " " " " " " ")))
-  (setq org-latex-to-pdf-process '("texi2dvi --clean --verbose --batch %f"))
-
-  (require 'org-special-blocks)
-  (defun org-export-latex-no-toc (depth)  
-    (when depth
-      (format "%% Org-mode is exporting headings to %s levels.\n"
-              depth)))
-  (setq org-export-latex-format-toc-function 'org-export-latex-no-toc)
-  (setq org-export-pdf-remove-logfiles nil)
-
-(org-add-link-type 
-   "cite" nil
-   (lambda (path desc format)
-     (cond
-      ((eq format 'latex)
-             (format "\\cite{%s}" path)))))
-
-(org-add-link-type 
-   "acm" nil
-   (lambda (path desc format)
-     (cond
-      ((eq format 'latex)
-             (format "{\\%s{%s}}" path desc)))))
-
-(add-to-list 'org-export-latex-classes
-               '("acm-proc-article-sp"
-                 "\\documentclass{acm_proc_article-sp}
-              [NO-DEFAULT-PACKAGES]
-              [EXTRA]"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'load-path "~/.emacs.d/src/org/lisp") ;; <- adjust
+  (add-to-list 'load-path "~/.emacs.d/src/org") ;; <- adjust
+  
+  (require 'org-install)
+  (require 'org-latex)
+  
+  ;; this line only required until the upcomming Org-mode/Emacs24 sync
+  (load "~/.emacs.d/src/org/lisp/org-exp-blocks.el")
+  
+  
+  ;; Configure Babel to support all languages included in the manuscript
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (org        . t)))
+  (setq org-confirm-babel-evaluate nil)
+  
+  ;; Configure Org-mode
+    (setq org-export-latex-hyperref-format "\\ref{%s}")
+    (setq org-entities-user '(("space" "\\ " nil " " " " " " " ")))
+    (setq org-latex-to-pdf-process '("texi2dvi --clean --verbose --batch %f"))
+  
+    (require 'org-special-blocks)
+    (defun org-export-latex-no-toc (depth)  
+      (when depth
+        (format "%% Org-mode is exporting headings to %s levels.\n"
+                depth)))
+    (setq org-export-latex-format-toc-function 'org-export-latex-no-toc)
+    (setq org-export-pdf-remove-logfiles nil)
+  
+  (org-add-link-type 
+     "cite" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "\\cite{%s}" path)))))
+  
+  (org-add-link-type 
+     "acm" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "{\\%s{%s}}" path desc)))))
+  
+  (add-to-list 'org-export-latex-classes
+                 '("acm-proc-article-sp"
+                   "\\documentclass{acm_proc_article-sp}
+                [NO-DEFAULT-PACKAGES]
+                [EXTRA]
+                 \\usepackage{graphicx}
+                 \\usepackage{hyperref}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 #+end_src
 
 ** Configure makefile
@@ -667,7 +678,7 @@ Once this is done, evaluate the code block with C-c C-c to create a
 Makefile.  
 
 #+name: configure-makefile
-#+header: :file makefile-temp
+#+header: :file Makefile
 #+header: :var emacs="/Applications/Emacs-23-4.app/Contents/MacOS/Emacs"
 #+header: :var init-file="init-old.el"
 #+BEGIN_SRC emacs-lisp
@@ -689,7 +700,16 @@ Makefile.
 #+END_SRC
 
 #+RESULTS: configure-makefile
-[[file:makefile-temp]]
+[[file:Makefile]]
+
+** Run make
+#+name: run-make
+#+BEGIN_SRC sh
+make
+#+END_SRC
+
+#+RESULTS: run-make
+: /Applications/Emacs-23-4.app/Contents/MacOS/Emacs --batch -Q -l init-old.el sigproc-sp-org-new.org -f org-export-as-latex
 
 ** General purpose lists
 
