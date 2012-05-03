@@ -278,7 +278,7 @@ give a couple of examples of display equations in context.
 First, consider the equation, shown as an inline equation above:
 \begin{equation}\lim_{n\rightarrow \infty}x=0\end{equation}
 Notice how it is formatted somewhat differently in
-the \textbf{displaymath}
+the *displaymath*
 environment.  Now, we'll enter an unnumbered equation:
 \begin{displaymath}
 \sum_{i=0}^{\infty} x + 1
@@ -403,6 +403,11 @@ details on each of these is found in the /Author's Guide/.
 
 [[file:fly.eps]]
 
+#+CAPTION: A sample black and white graphic (.eps format) that has been resized.
+#+ATTR_LaTeX: width=1in
+
+[[file:flies.eps]]
+
 #+BEGIN_COMMENT
 \begin{figure}
 \centering
@@ -434,14 +439,14 @@ other by the command =\newdef=; perhaps the clearest and easiest way
 to distinguish them is to compare the two in the output of this sample
 document:
 
-This uses the *theorem* environment, created by
-the\linebreak =\newtheorem= command:
+This uses the *theorem* environment, created by the =\newtheorem= command:
 \newtheorem{theorem}{Theorem}
 \begin{theorem}
 Let $f$ be continuous on $[a,b]$.  If $G$ is
 an antiderivative for $f$ on $[a,b]$, then
 \begin{displaymath}\int^b_af(t)dt = G(b) - G(a).\end{displaymath}
 \end{theorem}
+
 
 The other uses the *definition* environment, created
 by the =\newdef= command:
@@ -452,7 +457,13 @@ unique number which has
 logarithm $z$: \begin{displaymath}{\log e^z = z}\end{displaymath}
 \end{definition}
 
+#+CAPTION: A sample black and white graphic (.eps format) that needs to span two columns of text.
+#+ATTR_LaTeX: multicolumn
+
+[[file:flies.eps]]
+
 #+BEGIN_COMMENT
+
 \begin{figure}
 \centering
 \psfig{file=rosette.ps, height=1in, width=1in,}
@@ -476,9 +487,9 @@ and don't forget to end the environment with
 #+END_COMMENT
 
 There is one other similar construct environment, which is already set
-up for you; i.e. you must /not/ use a =\newdef= command to create it:
+up for you; i.e. you must /not/ use a =newdef= command to create it:
 the *proof* environment.  Here is a example of its use:
-\begin{proof}
+#+BEGIN_proof
 Suppose on the contrary there exists a real number $L$ such that
 \begin{displaymath}
 \lim_{x\rightarrow\infty} \frac{f(x)}{g(x)} = L.
@@ -492,7 +503,7 @@ l=\lim_{x\rightarrow c} f(x)
 \frac{f(x)}{g(x)} = 0\cdot L = 0,
 \end{displaymath}
 which contradicts our assumption that $l\neq 0$.
-\end{proof}
+#+END_proof
 
 Complete rules about using these environments and using the two
 different creation commands are in the /Author's Guide/; please
@@ -503,9 +514,9 @@ above, use the =\newtheorem= or the =\newdef= command, respectively,
 to create it.
 ** A [[acm:secit][Caveat]] for the TeX Expert
 #+COMMENT: This should be \subsection*.
-Because you have just been given permission to use the =\newdef=
+Because you have just been given permission to use the =newdef=
 command to create a new form, you might think you can use \TeX's
-=\def= to create a new command: /Please refrain from doing this!/
+=def= to create a new command: /Please refrain from doing this!/
 Remember that your LaTeX source code is primarily intended to create
 camera-ready copy, but may be converted to other forms --
 e.g. HTML. If you inadvertently omit some or all of the =\def= s
@@ -578,9 +589,101 @@ but please remember not to change it.
 * Setup                                                            :noexport:
 
 ** Instructions for use
-   - Tangle initialization file, C-c C-v t
-   - Generate the [[Configure%20makefile][Makefile]] 
-   - Run make
+   - Tangle initialization files, by entering C-c C-v t with the
+     cursor anywhere in this buffer.  This will tangle two
+     files, =init-old.el= and =init-new.el=, one for the old exporter
+     and one for the new exporter.
+   - Generate the [[Configure%20makefile][Makefile]], by placing the cursor in the source code
+     block and entering C-c C-c.  Depending on the values assigned to
+     its variables, this code will generate a Makefile suited for the
+     old exporter or the new exporter. 
+   - In a terminal, change to the project directory and run =make=.
+     This will launch a new instance of emacs, initialize Org-mode,
+     export this file and create a pdf file in ACM-SIG format.
+
+** Initialization file for new exporter
+
+
+This source code block tangles the initialization file that configures
+the old Org-mode LaTeX exporter.
+
+You might need to change this for your system:
+   - Check =load-path= settings
+   - Make sure the languages used in your source code blocks have been
+     loaded with =org-babel-load-languages=
+
+An org-entity, =\space=, has been added, which can be used after a
+period that doesn't end a sentence, e.g., "Dr.\space Martin Luther King"
+
+A link type, =cite=, is defined for citations.  See the text for how
+to insert a citation.  Note that AucTeX and ebib can be configured to
+insert the citation correctly.
+
+A link type, =acm=, is defined to insert ACM-specific commands used to
+italicize words in section headings.  See the text for examples of its
+use. 
+
+#+name: initialize-old-exporter
+#+header: :tangle init-new.el
+#+header: :results silent
+#+header: :exports none
+#+begin_src emacs-lisp 
+  (add-to-list 'load-path "~/.emacs.d/src/org/contrib/lisp") ;; <- adjust
+  (add-to-list 'load-path "~/.emacs.d/src/org/lisp") ;; <- adjust
+  (add-to-list 'load-path "~/.emacs.d/src/org") ;; <- adjust
+  
+  (require 'org-install)
+  (require 'org-export)
+  (require 'org-e-latex)
+  
+  ;; this line only required until the upcomming Org-mode/Emacs24 sync
+  (load "~/.emacs.d/src/org/lisp/org-exp-blocks.el")
+  
+  
+  ;; Configure Babel to support all languages included in the manuscript
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (org        . t)))
+  (setq org-confirm-babel-evaluate nil)
+  
+  ;; Configure Org-mode
+    (setq org-export-latex-hyperref-format "\\ref{%s}")
+    (setq org-entities-user nil) 
+    (add-to-list 'org-entities-user '("space" "\\ " nil " " " " " " " "))
+    (setq org-e-latex-pdf-process '("texi2dvi --clean --verbose --batch %f"))
+    (setq org-export-latex-packages-alist nil)
+    (add-to-list 'org-export-latex-packages-alist '("" "hyperref"))
+    (add-to-list 'org-export-latex-packages-alist '("" "graphicx"))
+
+    (require 'org-special-blocks)
+  
+  (org-add-link-type 
+     "cite" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "\\cite{%s}" path)))))
+  
+  (org-add-link-type 
+     "acm" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "{\\%s{%s}}" path desc)))))
+  
+  (add-to-list 'org-e-latex-classes
+                 '("acm-proc-article-sp"
+                   "\\documentclass{acm_proc_article-sp}
+                [NO-DEFAULT-PACKAGES]
+                [PACKAGES]
+                [EXTRA]"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+end_src
 
 ** Initialization file for old exporter
 
@@ -681,22 +784,26 @@ Makefile.
 #+header: :file Makefile
 #+header: :var emacs="/Applications/Emacs-23-4.app/Contents/MacOS/Emacs"
 #+header: :var init-file="init-old.el"
+#+header: :var exporter="old"
+#+header: :eval noexport
 #+BEGIN_SRC emacs-lisp
-  (let ((f (file-name-sans-extension (file-name-nondirectory (buffer-file-name)))))
-     (format "CC=gcc
-  EMACS=%s
-  BATCH_EMACS=$(EMACS) --batch -Q -l %s %s
-  
-  all: %s.pdf
-  
-  %s.tex: %s.org\n\t$(BATCH_EMACS) -f org-export-as-latex
-  
-  %s.pdf: %s.tex\n\trm -f %s.aux\n\tif pdflatex %s.tex </dev/null; then \\\n\t\ttrue; \\\n\telse \\\n\t\tstat=$$?; touch %s.pdf; exit $$stat; \\\n\tfi\n\tbibtex %s\n\twhile grep \"Rerun to get\" %s.log; do \\\n\t\tif pdflatex %s.tex </dev/null; then \\\n\t\t\ttrue; \\\n\t\telse \\\n\t\t\tstat=$$?; touch %s.pdf; exit $$stat; \\\n\t\tfi; \\\n\tdone
-  
-  %s.ps: %s.pdf\n\tpdf2ps %s.pdf
-  
-  clean:\n\trm -f *.aux *.log  *.dvi *.blg *.bbl *.toc *.tex *~ *.out %s.pdf *.xml *.lot *.lof
-  " emacs init-file (file-name-nondirectory (buffer-file-name)) f f f f f f f f f f f f f f f f))
+    (let ((f (file-name-sans-extension (file-name-nondirectory
+                                        (buffer-file-name))))
+          (g (if (string= exporter "old") "org-export-as-latex" "org-e-latex-export-to-latex")))
+       (format "CC=gcc
+    EMACS=%s
+    BATCH_EMACS=$(EMACS) --batch -Q -l %s %s
+    
+    all: %s.pdf
+    
+    %s.tex: %s.org\n\t$(BATCH_EMACS) -f %s
+    
+    %s.pdf: %s.tex\n\trm -f %s.aux\n\tif pdflatex %s.tex </dev/null; then \\\n\t\ttrue; \\\n\telse \\\n\t\tstat=$$?; touch %s.pdf; exit $$stat; \\\n\tfi\n\tbibtex %s\n\twhile grep \"Rerun to get\" %s.log; do \\\n\t\tif pdflatex %s.tex </dev/null; then \\\n\t\t\ttrue; \\\n\t\telse \\\n\t\t\tstat=$$?; touch %s.pdf; exit $$stat; \\\n\t\tfi; \\\n\tdone
+    
+    %s.ps: %s.pdf\n\tpdf2ps %s.pdf
+    
+    clean:\n\trm -f *.aux *.log  *.dvi *.blg *.bbl *.toc *.tex *~ *.out %s.pdf *.xml *.lot *.lof
+    " emacs init-file (file-name-nondirectory (buffer-file-name)) f f f g f f f f f f f f f f f f f))
 #+END_SRC
 
 #+RESULTS: configure-makefile
@@ -719,6 +826,7 @@ separated list wrapped by the command.
 
 #+name: list-to-cs-string
 #+header: :var in-list=term-list
+#+header: :eval noexport
 #+header: :var in-command="terms"
 #+header: :results latex 
 #+header: :exports results
