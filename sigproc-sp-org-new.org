@@ -1,7 +1,7 @@
 #+TITLE:
 #+KEYWORDS: Open Science, Reproducible Research
 #+LANGUAGE:  en
-#+OPTIONS: H:5 author:nil email:nil creator:nil timestamp:nil skip:nil
+#+OPTIONS: H:5 author:nil email:nil creator:nil timestamp:nil skip:nil toc:nil
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+STARTUP: overview
@@ -29,20 +29,18 @@
 #
 # Questions regarding SIGS should be sent to
 # Adrienne Griscti ---> griscti@acm.org
-#
 # Questions/suggestions regarding the guidelines, .tex and .cls files, etc. to
+#
 # Gerald Murray ---> murray@hq.acm.org
 #
 # For tracking purposes - this is V3.1SP - APRIL 2009
 
 #+LaTeX_CLASS: acm-proc-article-sp
 
-* Shouldn't need this                                              
 
 #+BEGIN_LaTeX
 \title{A Sample {\ttlit ACM} SIG Proceedings Paper in Org-mode Format\titlenote{(Does NOT produce the permission block, copyright information nor page numbering). For use with ACM\_PROC\_ARTICLE-SP.CLS. Supported by ACM.}}
-\subtitle{[Extended Abstract]
-\titlenote{A full version of this paper is available as
+\subtitle{[Extended Abstract]\titlenote{A full version of this paper is available as
 \textit{Author's Guide to Preparing ACM SIG Proceedings Using
 \LaTeX$2_\epsilon$\ and BibTeX} at
 \texttt{www.acm.org/eaddress.htm}}}
@@ -263,20 +261,19 @@ be invoked with the usual =\begin. . .\end= construction or with the
 short form =\(. . .\)=. You can use any of the symbols and structures,
 from $\alpha$ to $\omega$, available in LaTeX[[cite:Lamport:LaTeX][(Lamport LaTeX)]]; this
 section will simply show a few examples of in-text equations in
-context. Notice how this equation: \( \lim_{n\rightarrow \infty}x=0
-\), set here in in-line math style, looks slightly different when set
+context. Notice how this equation: \( \lim_{n\rightarrow \infty}x=0 \), set here in in-line math style, looks slightly different when set
 in display style.  (See next section).
 *** Display Equations
-A numbered display equation -- one set off by vertical space
-from the text and centered horizontally -- is produced
-by the *equation* environment. An unnumbered display
-equation is produced by the *displaymath* environment.
+A numbered display equation -- one set off by vertical space from the
+text and centered horizontally -- is produced by the *equation*
+environment. An unnumbered display equation is produced by the
+*displaymath* environment.
 
 Again, in either environment, you can use any of the symbols
 and structures available in LaTeX; this section will just
 give a couple of examples of display equations in context.
 First, consider the equation, shown as an inline equation above:
-\begin{equation}\lim_{n\rightarrow \infty}x=0\end{equation}
+# \begin{equation}\lim_{n\rightarrow \infty}x=0\end{equation}
 Notice how it is formatted somewhat differently in
 the *displaymath*
 environment.  Now, we'll enter an unnumbered equation:
@@ -336,9 +333,11 @@ with the table in the printed dvi output of this document.
 # \hline\end{tabular}
 # \end{table}
 
+# Note that there can be no space between these attribute lines or
+# between the attribute lines and the following table.
+
 #+CAPTION: Frequency of Special Characters
 #+ATTR_LaTeX: align=|c|c|l|
-
 |---------------------+-------------+-------------------|
 | Non-English or Math | Frequency   | Comments          |
 |---------------------+-------------+-------------------|
@@ -375,7 +374,6 @@ of this document.
 
 #+CAPTION: Some Typical Commands
 #+ATTR_LaTeX: table* align=|c|c|l|
-
 |--------------------+----------+--------------------|
 | Command            | A Number | Comments           |
 |--------------------+----------+--------------------|
@@ -400,12 +398,11 @@ and *.ps* files to be displayable with LaTeX.  More
 details on each of these is found in the /Author's Guide/.
 
 #+CAPTION: A sample black and white graphic (.eps format).
-
+#+ATTR_LaTeX: width=\linewidth
 [[file:fly.eps]]
 
 #+CAPTION: A sample black and white graphic (.eps format) that has been resized.
 #+ATTR_LaTeX: width=1in
-
 [[file:flies.eps]]
 
 #+BEGIN_COMMENT
@@ -459,8 +456,8 @@ logarithm $z$: \begin{displaymath}{\log e^z = z}\end{displaymath}
 
 #+CAPTION: A sample black and white graphic (.eps format) that needs to span two columns of text.
 #+ATTR_LaTeX: multicolumn
-
 [[file:flies.eps]]
+
 
 #+BEGIN_COMMENT
 
@@ -623,7 +620,7 @@ A link type, =acm=, is defined to insert ACM-specific commands used to
 italicize words in section headings.  See the text for examples of its
 use. 
 
-#+name: initialize-old-exporter
+#+name: initialize-new-exporter
 #+header: :tangle init-new.el
 #+header: :results silent
 #+header: :exports none
@@ -783,8 +780,8 @@ Makefile.
 #+name: configure-makefile
 #+header: :file Makefile
 #+header: :var emacs="/Applications/Emacs-23-4.app/Contents/MacOS/Emacs"
-#+header: :var init-file="init-old.el"
-#+header: :var exporter="old"
+#+header: :var init-file="init-new.el"
+#+header: :var exporter="new"
 #+header: :eval noexport
 #+BEGIN_SRC emacs-lisp
     (let ((f (file-name-sans-extension (file-name-nondirectory
@@ -826,7 +823,6 @@ separated list wrapped by the command.
 
 #+name: list-to-cs-string
 #+header: :var in-list=term-list
-#+header: :eval noexport
 #+header: :var in-command="terms"
 #+header: :results latex 
 #+header: :exports results
