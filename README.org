@@ -30,6 +30,15 @@ the original, but with a few deviations.  The new exporter looks like
 it will be capable of generating a LaTeX file that doesn't need to be
 tweaked. 
 
+* Files
+  - =ACM-template.org= is the template you'll use to start a new paper
+  - =README.org= is this file
+  - =acm_proc_article-sp.cls= is the ACM-SIG LaTeX class file
+  - =flies.eps= is a graphic used by =sigproc-sp-org-new.org= and =sigproc-sp.tex=
+  - =fly.eps= is a graphic used by =sigproc-sp-org-new.org= and =sigproc-sp.tex=
+  - =sigproc-sp-org-new.org= is the ACM-SIG example file translated
+    into Org-mode
+  - =sigproc-sp.tex= is the ACM-SIG example file
 * Issues
 
   - Karl 2012-04-25: new Org-mode export does nothing but writing
