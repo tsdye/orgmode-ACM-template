@@ -39,6 +39,7 @@ tweaked.
   - =sigproc-sp-org-new.org= is the ACM-SIG example file translated
     into Org-mode
   - =sigproc-sp.tex= is the ACM-SIG example file
+  - =sigproc.bib= is the bibliography file used by =sigproc-sp-org-new.org= and =sigproc-sp.tex=
 * Issues
 
   - Karl 2012-04-25: new Org-mode export does nothing but writing
