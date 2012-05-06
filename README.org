@@ -17,13 +17,19 @@ http://www.acm.org/sigs/publications/proceedings-templates
 The template should be as much self-containing as possible. So no
 special settings required in ~$HOME/.emacs~
 
-The file ACM-template.org contains everything needed to produce the
+The file =ACM-template.org= contains everything needed to produce the
 ACM paper from an Org-mode file.  It tangles initialization files for
 the new exporter and the old exporter.  It writes a Makefile that:
   - launches a fresh instance of Emacs,
   - loads the selected initialization file,
   - then processes the Org-mode file that generated it.
  
+The file =sigproc-sp-org-new.org= contains the ACM-SIG LaTeX sample in
+Org-mode. The LaTeX output from Org-mode comes close to reproducing
+the original, but with a few deviations.  The new exporter looks like
+it will be capable of generating a LaTeX file that doesn't need to be
+tweaked. 
+
 * Issues
 
   - Karl 2012-04-25: new Org-mode export does nothing but writing
